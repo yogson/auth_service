@@ -1,0 +1,11 @@
+[
+  {"username": "admin",
+    "email": ""
+  },
+  {"username": "user",
+    "email": "user@mail.by",
+    "full_name": "",
+    "disabled": false,
+    "hashed_password": "$2b$12$1bThTbv1Rc7SkVAMzpn0POZ92sHp7QQIEkWDaAokiWOCPzp/KA34C"
+  }
+]
