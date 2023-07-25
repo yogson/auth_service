@@ -10,4 +10,7 @@ class AbstractUsersDAO(abc.ABC):
     def get_user_by_name(self, username: str) -> Optional[UserInDB]:
         pass
 
+    @abc.abstractmethod
+    def save_user(self, user: UserInDB):
+        pass
 
