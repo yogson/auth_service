@@ -13,8 +13,29 @@
     "email": "user@mail.by",
     "full_name": "",
     "disabled": false,
-    "last_login": 1690294974,
-    "updated_at": 1690294974,
+    "last_login": 1690380493,
+    "updated_at": 1690380493,
     "hashed_password": "$2b$12$1bThTbv1Rc7SkVAMzpn0POZ92sHp7QQIEkWDaAokiWOCPzp/KA34C"
+  },
+  {
+    "username": "loh",
+    "email": null,
+    "full_name": null,
+    "disabled": null,
+    "last_login": null,
+    "updated_at": 1690381643,
+    "hashed_password": "$2b$12$BljXr/V/H41NVJPhgQ/X9uwftN6HFveU0wuFRIuBkeO//WYQpoe06"
+  },
+  {
+    "username": "adsky user",
+    "email": null,
+    "full_name": null,
+    "disabled": null,
+    "last_login": 1690382878,
+    "updated_at": 1690383438,
+    "data": {
+      "android_key": "LOL KEY"
+    },
+    "hashed_password": "$2b$12$bEw9S4VNW1peRb9T907CyeJv2UIPbyPFkGYByo3HeX5Ru46W0YBV."
   }
 ]
