@@ -14,7 +14,7 @@ router = APIRouter()
 @router.post("/login")
 async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
     user_login = LocalUserLoginProcessor(username=form_data.username, password=form_data.password).login()
-    if not user_login:
+    if not user_login or user_login.user.disabled:
         raise exceptions.bad_creds
 
     return {"access_token": user_login.get_access_token(), "token_type": "bearer"}
@@ -30,3 +30,5 @@ async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
         raise exceptions.already_exists
 
     return {"user": user_register.user.username}
+
+

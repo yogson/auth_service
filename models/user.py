@@ -8,7 +8,6 @@ class UserModel(BaseModel):
     disabled: bool | None = None
     last_login: int | None = None
     updated_at: int | None = None
-    data: dict | None = None
 
 
 class UserInDB(UserModel):

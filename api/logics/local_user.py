@@ -19,7 +19,7 @@ def get_password_hash(password):
 
 class LocalUser:
     user: UserInDB
-    users_db = FileUsersDAO(file_obj=Path("/Users/yogson/PycharmProjects/auth_service/tests/users.json"))
+    users_db = FileUsersDAO(data_path=Path("/Users/yogson/PycharmProjects/auth_service/data/users"))
 
     def __init__(self, *, username: str, password: str):
         self.username = username

@@ -1,6 +1,4 @@
-import datetime
 import json
-from functools import cached_property
 from pathlib import Path
 from typing import Optional
 
@@ -9,34 +7,57 @@ from models.user import UserInDB
 from utils.common import get_utcnow_timestamp
 
 
-class FileUsersDAO(AbstractUsersDAO):
+class FileUser:
 
-    def __init__(self, file_obj: Path):
-        self.file = file_obj
-        self.__objects = None  # type: list
+    def __init__(self, base_path: Path, username: str):
+        self.base_path = base_path
+        self.username = username
 
     @property
-    def _objects(self) -> list:
-        if not self.__objects:
-            self.__objects = json.loads(self.file.read_text())
-        return self.__objects
+    def user_path(self) -> Path:
+        return self.base_path / self.username[0].capitalize()
 
-    @_objects.setter
-    def _objects(self, data: list):
-        self.__objects = data
+    @property
+    def user_file(self) -> Path:
+        return self.user_path / f'{self.username}.json'
 
-    def _save(self, data: list[dict]):
-        self.file.write_text(json.dumps(data, indent=2))
+    def save(self, data: dict):
+        try:
+            self.user_file.write_text(json.dumps(data))
+        except FileNotFoundError:
+            if not self.user_path.exists():
+                self.user_path.mkdir(parents=True, exist_ok=True)
+                self.save(data)
+
+    def read(self) -> Optional[dict]:
+        try:
+            return json.loads(self.user_file.read_text())
+        except FileNotFoundError:
+            return
+
+
+class FileUsersDAO(AbstractUsersDAO):
+
+    def __init__(self, data_path: Path):
+        self.data_path = data_path
+        self._check_path()
+
+    def _check_path(self):
+        if not self.data_path.exists():
+            if self.data_path.is_dir():
+                self.data_path.mkdir(parents=True, exist_ok=True)
+
+    def _save(self, username: str, data: dict):
+        FileUser(base_path=self.data_path, username=username).save(data)
 
     def get_user_by_name(self, username: str) -> Optional[UserInDB]:
-        for user in filter(lambda x: x["username"] == username, self._objects):
+        user_file = FileUser(base_path=self.data_path, username=username)
+        user = user_file.read()
+        if user:
             return UserInDB(**user)
 
     def save_user(self, user: UserInDB):
-        objects = self._objects
         user_data = dict(user)
         user_data["updated_at"] = get_utcnow_timestamp()
-        all(map(lambda x: objects.pop(objects.index(x)), filter(lambda r: r["username"] == user.username, objects)))
-        objects.append(user_data)
-        self._save(self._objects)
+        self._save(username=user.username, data=user_data)
 

@@ -31,11 +31,8 @@
     "email": null,
     "full_name": null,
     "disabled": null,
-    "last_login": 1690382878,
-    "updated_at": 1690383438,
-    "data": {
-      "android_key": "LOL KEY"
-    },
+    "last_login": 1690982251,
+    "updated_at": 1690982251,
     "hashed_password": "$2b$12$bEw9S4VNW1peRb9T907CyeJv2UIPbyPFkGYByo3HeX5Ru46W0YBV."
   }
 ]
