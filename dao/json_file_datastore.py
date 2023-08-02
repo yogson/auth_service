@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Optional
 
 from dao.abstract_datastore import AbstractDatastoreDAO
+from utils.common import logger
 
 
 class JsonFileDatastore(AbstractDatastoreDAO):
@@ -28,7 +29,11 @@ class JsonFileDatastore(AbstractDatastoreDAO):
                 self.data_file(key).parent.mkdir(parents=True, exist_ok=True)
                 self.save_data(key, data)
 
-    def get_data(self, key: str) -> Optional[dict]:
+    def get_data(self, key: str) -> dict:
         data_file = self.data_file(key)
         if data_file.exists():
-            return json.loads(data_file.read_text())
+            try:
+                return json.loads(data_file.read_text())
+            except json.decoder.JSONDecodeError as e:
+                logger.error(f"Bad datafile {data_file}: {e}")
+        return {}

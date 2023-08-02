@@ -3,6 +3,7 @@ from typing import Annotated, Dict, Union
 from fastapi import APIRouter, Depends
 from starlette.responses import JSONResponse
 
+from api.exceptions import no_data
 from api.logics.local_user import LocalUser
 from api.logics.tokens import get_current_user
 from api.logics.user_data import write_user_data, retrieve_user_data
@@ -31,6 +32,8 @@ async def post_data(
 @router.get("/data")
 async def get_data(current_user: Annotated[UserModel, Depends(get_current_user)]):
     data = retrieve_user_data(username=current_user.username)
+    if not data:
+        raise no_data
     return JSONResponse(content=data)
 
 
