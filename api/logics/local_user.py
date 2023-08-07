@@ -2,6 +2,7 @@ from pathlib import Path
 
 from passlib.context import CryptContext
 
+from api.settings import USERS_STORE
 from dao.infile_user_dao import FileUsersDAO
 from models.user import UserInDB
 
@@ -19,7 +20,7 @@ def get_password_hash(password):
 
 class LocalUser:
     user: UserInDB
-    users_db = FileUsersDAO(data_path=Path("/Users/yogson/PycharmProjects/auth_service/data/users"))
+    users_db = FileUsersDAO(data_path=Path(USERS_STORE))
 
     def __init__(self, *, username: str, password: str):
         self.username = username

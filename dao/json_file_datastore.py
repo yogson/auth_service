@@ -1,6 +1,5 @@
 import json
 from pathlib import Path
-from typing import Optional
 
 from dao.abstract_datastore import AbstractDatastoreDAO
 from utils.common import logger

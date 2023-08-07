@@ -5,7 +5,7 @@ bad_creds = HTTPException(status_code=400, detail="Incorrect username or passwor
 unknown_client = HTTPException(status_code=400, detail="Unknown client")
 already_exists = HTTPException(status_code=400, detail="User already exists")
 no_data = HTTPException(status_code=400, detail="Data is absent for user")
-bad_token =  HTTPException(
+bad_token = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate the token",
         headers={"WWW-Authenticate": "Bearer"},
