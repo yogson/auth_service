@@ -1,13 +1,20 @@
 from pydantic import BaseModel
 
 
-class UserModel(BaseModel):
+class UserBase(BaseModel):
     username: str
+    last_login: int | None = None
+    updated_at: int | None = None
+
+
+class UserProperties(BaseModel):
     email: str | None = None
     full_name: str | None = None
     disabled: bool | None = None
-    last_login: int | None = None
-    updated_at: int | None = None
+
+
+class UserModel(UserBase, UserProperties):
+    pass
 
 
 class UserInDB(UserModel):
