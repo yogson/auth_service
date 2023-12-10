@@ -1,5 +1,4 @@
 from datetime import timedelta
-from functools import cached_property
 from typing import Optional
 
 from api.logics.local_user import LocalUser, verify_password
@@ -17,7 +16,7 @@ class LocalUserLoginProcessor(LocalUser):
     def login(self, password: str) -> Optional["LocalUserLoginProcessor"]:
         if self.authenticate(password):
             self._user.last_login = get_utcnow_timestamp()
-            self.users_db.save_user(self._user)
+            self.users_db.save_user(self._user, update_ts=False)
             return self
 
     def get_access_token(self):

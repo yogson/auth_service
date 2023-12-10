@@ -1,3 +1,4 @@
+from functools import cached_property
 from pathlib import Path
 from typing import Optional
 
@@ -29,16 +30,18 @@ class LocalUser:
     def __init__(self, *, username: str):
         self.username = username
 
-    @property
+    @cached_property
     def _user(self) -> UserInDB:
         user = self.users_db.get_user_by_name(self.username)
         if user:
             return user
-        raise UserNotExist(self.username)
 
     @property
     def user(self) -> UserModel:
-        return UserModel(**self._user.model_dump())
+        try:
+            return UserModel(**self._user.model_dump())
+        except AttributeError:
+            raise UserNotExist(self.username)
 
     def register(self, password: str) -> Optional['LocalUser']:
         if not self._user:

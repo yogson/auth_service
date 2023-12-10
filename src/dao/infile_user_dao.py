@@ -56,8 +56,8 @@ class FileUsersDAO(AbstractUsersDAO):
         if user:
             return UserInDB(**user)
 
-    def save_user(self, user: UserInDB):
+    def save_user(self, user: UserInDB, update_ts=True):
         user_data = dict(user)
-        user_data["updated_at"] = get_utcnow_timestamp()
+        user_data["updated_at"] = get_utcnow_timestamp() if update_ts else user_data["updated_at"]
         self._save(username=user.username, data=user_data)
 
