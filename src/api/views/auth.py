@@ -9,7 +9,7 @@ from api import exceptions, settings
 from api.logics.local_user import LocalUser
 from api.logics.login_user import LocalUserLoginProcessor
 from api.settings import LIMIT_REGISTER, LIMIT_LOGIN
-from limiters import limiter
+from api.limiters import limiter
 
 auth_router = APIRouter()
 
