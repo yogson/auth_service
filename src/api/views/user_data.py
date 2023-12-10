@@ -26,8 +26,6 @@ async def post_data(
 @data_router.get("/data")
 async def get_data(current_user: UserModel = Depends(get_current_user)):
     data = retrieve_user_data(username=current_user.username)
-    if not data:
-        raise no_data
     return JSONResponse(content=data)
 
 

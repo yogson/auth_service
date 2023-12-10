@@ -1,26 +1,29 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI
 
-from api.settings import PATH
-from api.views.auth import auth_router
-from api.views.user import user_router
-from api.views.user_data import data_router
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
 
-app = FastAPI()
+from limiters import limiter
 
-user_router.include_router(data_router)
 
-root_router = APIRouter(
-    prefix=PATH
-)
+def _set_limiters(app: FastAPI):
+    app.state.limiter = limiter
+    app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-root_router.include_router(
-    auth_router,
-    prefix="/auth"
-)
 
-root_router.include_router(
-    user_router,
-    prefix="/user"
-)
+class App:
 
-app.include_router(root_router)
+    app: FastAPI = None
+
+    def __new__(cls, *_, **__):
+        return cls.__call__()
+
+    @classmethod
+    def __call__(cls) -> FastAPI:
+        if not cls.app:
+            from api.routes import root_router
+            cls.app = FastAPI()
+            cls.app.include_router(root_router)
+            _set_limiters(cls.app)
+        return cls.app
+

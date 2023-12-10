@@ -13,6 +13,9 @@ ACCESS_TOKEN_TTL = 1800
 USER_DATA_STORE = environ.get("USER_DATA_STORE")
 USERS_STORE = environ.get("USERS_STORE")
 
+LIMIT_REGISTER = "2/minute"
+LIMIT_LOGIN = "10/minute"
+
 try:
     from api.local_settings import *
 except:
