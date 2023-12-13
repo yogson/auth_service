@@ -1,9 +1,24 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
 from api.limiters import limiter
+
+origins = [
+    "*",
+]
+
+
+def _set_cors_middleware(app: FastAPI):
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 
 def _set_limiters(app: FastAPI):
@@ -25,5 +40,6 @@ class App:
             cls.app = FastAPI()
             cls.app.include_router(root_router)
             _set_limiters(cls.app)
+            _set_cors_middleware(cls.app)
         return cls.app
 
