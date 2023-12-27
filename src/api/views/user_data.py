@@ -16,7 +16,7 @@ data_router = APIRouter()
 @data_router.post("/data", response_model=UserModel)
 async def post_data(
     data: Dict[str, Union[str, int, bool]],
-    current_user: Annotated[UserModel, Depends(get_current_user)]
+    current_user: Annotated[UserModel, Depends(get_current_user)],
 ):
     write_user_data(current_user.username, data)
     LocalUser.users_db.save_user(user=current_user)
@@ -27,5 +27,3 @@ async def post_data(
 async def get_data(current_user: UserModel = Depends(get_current_user)):
     data = retrieve_user_data(username=current_user.username)
     return JSONResponse(content=data)
-
-

@@ -8,7 +8,6 @@ from utils.common import get_utcnow_timestamp
 
 
 class FileUser:
-
     def __init__(self, base_path: Path, username: str):
         self.base_path = base_path
         self.username = username
@@ -19,7 +18,7 @@ class FileUser:
 
     @property
     def user_file(self) -> Path:
-        return self.user_path / f'{self.username}.json'
+        return self.user_path / f"{self.username}.json"
 
     def save(self, data: dict):
         try:
@@ -37,7 +36,6 @@ class FileUser:
 
 
 class FileUsersDAO(AbstractUsersDAO):
-
     def __init__(self, data_path: Path):
         self.data_path = data_path
         self._check_path()
@@ -60,4 +58,3 @@ class FileUsersDAO(AbstractUsersDAO):
         user_data = dict(user)
         user_data["updated_at"] = get_utcnow_timestamp() if update_ts else user_data["updated_at"]
         self._save(username=user.username, data=user_data)
-

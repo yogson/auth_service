@@ -13,4 +13,4 @@ def get_utcnow_timestamp():
 
 def create_update_model(model: Type[BaseModel]) -> Type[BaseModel]:
     fields = {name: (Optional[_type], None) for name, _type in model.__annotations__.items()}
-    return create_model('Update' + model.__name__, **fields)
+    return create_model("Update" + model.__name__, **fields)

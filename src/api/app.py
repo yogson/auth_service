@@ -27,7 +27,6 @@ def _set_limiters(app: FastAPI):
 
 
 class App:
-
     app: FastAPI = None
 
     def __new__(cls, *_, **__):
@@ -37,9 +36,9 @@ class App:
     def __call__(cls) -> FastAPI:
         if not cls.app:
             from api.routes import root_router
+
             cls.app = FastAPI()
             cls.app.include_router(root_router)
             _set_limiters(cls.app)
             _set_cors_middleware(cls.app)
         return cls.app
-

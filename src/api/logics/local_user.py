@@ -43,7 +43,7 @@ class LocalUser:
         except AttributeError:
             raise UserNotExist(self.username)
 
-    def register(self, password: str) -> Optional['LocalUser']:
+    def register(self, password: str) -> Optional["LocalUser"]:
         if not self._user:
             self.users_db.save_user(UserInDB(username=self.username, hashed_password=get_password_hash(password)))
             return self

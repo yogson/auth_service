@@ -18,7 +18,7 @@ class JsonFileDatastore(AbstractDatastoreDAO):
                 self.data_path.mkdir(parents=True, exist_ok=True)
 
     def data_file(self, key: str) -> Path:
-        return self.data_path / f'{key}.json'
+        return self.data_path / f"{key}.json"
 
     def save_data(self, key: str, data: dict):
         try:
