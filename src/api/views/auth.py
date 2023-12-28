@@ -10,7 +10,7 @@ from api.exceptions import no_refresh_token, bad_refresh_token
 from api.logics.local_user import LocalUser
 from api.logics.login_user import LocalUserLoginProcessor
 from api.logics.tokens import TokenProcessor
-from api.settings import LIMIT_REGISTER, LIMIT_LOGIN
+from api.settings import LIMIT_REGISTER, LIMIT_LOGIN, LIMIT_REFRESH
 from api.limiters import limiter
 
 auth_router = APIRouter()
@@ -38,16 +38,15 @@ async def register(request: Request, form_data: OAuth2PasswordRequestForm = Depe
     if not user_register:
         await sleep(1)
         raise exceptions.already_exists
-
     return {"user": user_register.username}
 
 
 @auth_router.post("/refresh")
-async def refresh_token(response: Response, refresh_token: str = Cookie(None)):
+@limiter.limit(LIMIT_REFRESH)
+async def refresh_token(request: Request, refresh_token: str = Cookie(None)):
     if refresh_token is None:
         raise no_refresh_token
     token_processor = TokenProcessor().verity_refresh_token(refresh_token)
     if not token_processor.user:
         raise bad_refresh_token
-    token = token_processor.get_access_token()
-    return {"access_token": token, "token_type": "Bearer"}
+    return {"access_token": token_processor.get_access_token(), "token_type": "Bearer"}

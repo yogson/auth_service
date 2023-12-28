@@ -3,7 +3,6 @@ from typing import Annotated, Dict, Union
 from fastapi import Depends, APIRouter
 from starlette.responses import JSONResponse
 
-from api.exceptions import no_data
 from api.logics.local_user import LocalUser
 from api.logics.tokens import get_current_user
 from api.logics.user_data import write_user_data, retrieve_user_data

@@ -17,6 +17,7 @@ USERS_STORE = environ.get("USERS_STORE")
 
 LIMIT_REGISTER = "2/minute"
 LIMIT_LOGIN = "10/minute"
+LIMIT_REFRESH = "20/minute"
 
 try:
     from api.local_settings import *
