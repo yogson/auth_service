@@ -5,16 +5,13 @@ from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
 from api.limiters import limiter
-
-origins = [
-    "*",
-]
+from api.settings import ORIGINS
 
 
 def _set_cors_middleware(app: FastAPI):
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=origins,
+        allow_origins=ORIGINS,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],

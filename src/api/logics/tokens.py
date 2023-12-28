@@ -19,7 +19,7 @@ class TokenType(Enum):
     refresh = "refresh"
 
 
-def create_token(data: dict, token_ttl: timedelta | None = None):
+def create_token(data: dict, token_ttl: timedelta = None):
     to_encode = data.copy()
     if token_ttl:
         expire = datetime.utcnow() + token_ttl

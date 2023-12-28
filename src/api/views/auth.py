@@ -24,7 +24,7 @@ async def login(request: Request, response: Response, form_data: Annotated[OAuth
         raise exceptions.bad_creds
     token_processor = TokenProcessor(for_user=user)
     response.set_cookie(
-        key="refresh_token", value=token_processor.get_refresh_token(), httponly=True, secure=True, samesite="lax"
+        key="refresh_token", value=token_processor.get_refresh_token(), httponly=True, secure=False, samesite="lax"
     )
     return {"access_token": token_processor.get_access_token(), "token_type": "Bearer"}
 
@@ -49,4 +49,5 @@ async def refresh_token(response: Response, refresh_token: str = Cookie(None)):
     token_processor = TokenProcessor().verity_refresh_token(refresh_token)
     if not token_processor.user:
         raise bad_refresh_token
-    return {"access_token": token_processor.get_access_token(), "token_type": "Bearer"}
+    token = token_processor.get_access_token()
+    return {"access_token": token, "token_type": "Bearer"}

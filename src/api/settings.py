@@ -10,6 +10,7 @@ APP_KEYS = environ.get("APP_KEYS").split(",")
 ALGORITHM = "HS512"
 ACCESS_TOKEN_TTL = 600
 REFRESH_TOKEN_TTL = 10800
+ORIGINS = environ.get("ORIGINS").split(",")
 
 USER_DATA_STORE = environ.get("USER_DATA_STORE")
 USERS_STORE = environ.get("USERS_STORE")
