@@ -3,6 +3,7 @@ from pydantic import BaseModel
 
 class UserBase(BaseModel):
     username: str
+    guid: str
     last_login: int | None = None
     updated_at: int | None = None
     disabled: bool | None = None

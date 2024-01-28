@@ -9,7 +9,7 @@ from jose import jwt, JWTError
 from api import exceptions
 from api.logics.local_user import LocalUser
 from api.settings import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_TTL, REFRESH_TOKEN_TTL
-from models.user import UserInDB, UserModel
+from models.user import UserModel
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
@@ -34,9 +34,32 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> Use
     return TokenProcessor().verity_access_token(token).user
 
 
+async def verity_access_token(token: Annotated[str, Depends(oauth2_scheme)]):
+    return _verify_token(token, token_type=TokenType.access)
+
+
 def _get_token(*, subject: str, token_type: str, token_ttl: int) -> str:
     data = {"sub": subject, "token_type": token_type}
     return create_token(data, token_ttl=timedelta(seconds=token_ttl))
+
+
+def _verify_token(token: str, token_type: TokenType) -> str:
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        guid: str = payload.get("sub")
+        payload_token_type = payload.get("token_type")
+        if guid is None or payload_token_type != token_type.value:
+            raise exceptions.bad_token(token_type.value)
+        return guid
+    except JWTError:
+        raise exceptions.bad_token(token_type.value)
+
+
+def get_user_by_guid(guid: str):
+    user = LocalUser.users_db.get_user_by_guid(guid)
+    if user is None:
+        raise exceptions.no_user
+    return user
 
 
 class TokenProcessor:
@@ -44,29 +67,17 @@ class TokenProcessor:
         self.user = for_user
 
     def get_access_token(self) -> str:
-        return _get_token(subject=self.user.username, token_type="access", token_ttl=ACCESS_TOKEN_TTL)
+        return _get_token(subject=self.user.guid, token_type="access", token_ttl=ACCESS_TOKEN_TTL)
 
     def get_refresh_token(self) -> str:
-        return _get_token(subject=self.user.username, token_type="refresh", token_ttl=REFRESH_TOKEN_TTL)
-
-    def _verify_token(self, token: str, token_type: TokenType) -> UserModel:
-        try:
-            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-            username: str = payload.get("sub")
-            payload_token_type = payload.get("token_type")
-            if username is None or payload_token_type != token_type.value:
-                raise exceptions.bad_token(token_type.value)
-        except JWTError:
-            raise exceptions.bad_token(token_type.value)
-        user = LocalUser.users_db.get_user_by_name(username)
-        if user is None:
-            raise exceptions.bad_token(token_type.value)
-        return user
+        return _get_token(subject=self.user.guid, token_type="refresh", token_ttl=REFRESH_TOKEN_TTL)
 
     def verity_access_token(self, token: str):
-        self.user = self._verify_token(token, TokenType.access)
+        user_guid = _verify_token(token, TokenType.access)
+        self.user = get_user_by_guid(user_guid)
         return self
 
     def verity_refresh_token(self, token: str):
-        self.user = self._verify_token(token, TokenType.refresh)
+        user_guid = _verify_token(token, TokenType.refresh)
+        self.user = get_user_by_guid(user_guid)
         return self

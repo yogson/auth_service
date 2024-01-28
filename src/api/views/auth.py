@@ -15,6 +15,8 @@ from api.limiters import limiter
 
 auth_router = APIRouter()
 
+JUNK_TOKEN = "loggedOut"
+
 
 @auth_router.post("/login")
 @limiter.limit(LIMIT_LOGIN)
@@ -23,9 +25,8 @@ async def login(request: Request, response: Response, form_data: Annotated[OAuth
     if not user or user.disabled:
         raise exceptions.bad_creds
     token_processor = TokenProcessor(for_user=user)
-    response.set_cookie(
-        key="refresh_token", value=token_processor.get_refresh_token(), httponly=True, secure=False, samesite="lax"
-    )
+    set_auth_cookie(response, token_processor.get_refresh_token())
+
     return {"access_token": token_processor.get_access_token(), "token_type": "Bearer"}
 
 
@@ -42,21 +43,37 @@ async def register(request: Request, response: Response, form_data: OAuth2Passwo
     if not user or user.disabled:
         raise exceptions.bad_creds
     token_processor = TokenProcessor(for_user=user)
-    response.set_cookie(
-        key="refresh_token", value=token_processor.get_refresh_token(), httponly=True, secure=False, samesite="lax"
-    )
+    set_auth_cookie(response, token_processor.get_refresh_token())
+
     return {"access_token": token_processor.get_access_token(), "token_type": "Bearer"}
 
 
 @auth_router.post("/refresh")
 @limiter.limit(LIMIT_REFRESH)
 async def refresh_token(request: Request, response: Response, refresh_token: str = Cookie(None)):
-    if refresh_token is None:
-        raise no_refresh_token
+    check_refresh_token_presence(refresh_token)
     token_processor = TokenProcessor().verity_refresh_token(refresh_token)
     if not token_processor.user:
         raise bad_refresh_token
-    response.set_cookie(
-        key="refresh_token", value=token_processor.get_refresh_token(), httponly=True, secure=False, samesite="lax"
-    )
+    set_auth_cookie(response, token_processor.get_refresh_token())
+
     return {"access_token": token_processor.get_access_token(), "token_type": "Bearer"}
+
+
+@auth_router.post("/logout")
+@limiter.limit(LIMIT_LOGIN)
+async def logout(request: Request, response: Response, refresh_token: str = Cookie(None)):
+    check_refresh_token_presence(refresh_token)
+    token_processor = TokenProcessor().verity_refresh_token(refresh_token)
+    if not token_processor.user:
+        raise bad_refresh_token
+    set_auth_cookie(response, JUNK_TOKEN)
+
+
+def set_auth_cookie(response: Response, value: str):
+    response.set_cookie(key="refresh_token", value=value, httponly=True, secure=False, samesite="lax")
+
+
+def check_refresh_token_presence(refresh_token: str | None):
+    if refresh_token is None or refresh_token == JUNK_TOKEN:
+        raise no_refresh_token
